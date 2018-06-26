@@ -1,0 +1,12 @@
+4 spheres Q1 optimized positions for max extinction
+
+ans =
+
+     0    10    30    20
+     0    10    20    30
+     0    30    10    20
+
+optimized area for these positions
+ans =
+
+    0.2508 nm^2
