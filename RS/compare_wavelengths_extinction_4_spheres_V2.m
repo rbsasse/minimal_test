@@ -36,8 +36,11 @@ param_step = 10;
 disp(cl);
 
 
+%% Maybe want to use parallel computing (can only use 1 parfor in the nested loop)
+%%-- matlab has built in toolbox for this -- this could speed up run time
+%% this isn't the most efficient method, try to work on something that will be better 
 
-for  x1pos = param_min : param_step : param_max %go through positioning x,y and z particle 1
+parfor  x1pos = param_min : param_step : param_max %go through positioning x,y and z particle 1
     for y1pos = param_min : param_step : param_max 
         for z1pos = param_min : param_step : param_max %three coordinates particle 1
             for x2pos = param_min : param_step : param_max
