@@ -1,0 +1,68 @@
+function Cext = splac_Cext2(p, kn, positions, radius, Incidence, Egrid)
+%% splac_Cext2
+% Calculates the extinction cross-section of the combined system using the
+% optical theorem and reciprocity
+% 
+%	splac_Cext2(p, Incidence, kn) computes Cext = Im(E_ff . E_inc*)
+%
+% Input:
+% - p: dipole moments previously calculated [3nR x nA] complex matrix
+% - Incidence: Euler angles of incidence angles [3 x nA]
+% - kn: wave number in incident medium
+%
+% Output: Extinction cross-section 
+%
+% Dependency: none
+% 
+
+%% First, calculate Eloc for two orthogonal polarisations (splac)
+
+% incidence angles
+Na = size(Incidence, 2);
+
+Evec1 = [1 0 0];
+Evec2 = [0 1 0];
+kvec =  [0 0 1];
+
+% Incidence corresponds to the incident field, here for the ORT we require
+% the opposite direction, i.e theta -> -theta, phi -> phi + pi
+
+RevIncidence = Incidence;
+RevIncidence(1,:) = - Incidence(1,:);
+RevIncidence(2,:) = Incidence(2,:) + pi;
+% 3d row? currently unclear what we're doing with polarisation
+
+% fields are bound col-wise as [3nR x nA] (same as P)
+Einc1 = incident_field_sphere_multidir(Evec1, kvec, positions, radius, Incidence, Egrid);
+Einc2 = incident_field_sphere_multidir(Evec2, kvec, positions, radius, Incidence, Egrid);
+Eloc1 = incident_field_sphere_multidir(Evec1, kvec, positions, radius, RevIncidence, Egrid);
+Eloc2 = incident_field_sphere_multidir(Evec2, kvec, positions, radius, RevIncidence, Egrid);
+
+%% Next, use reciprocity to deduce E_ff and scattering amplitude S
+% E_ff =  eikR /(kappa R) S, with S = k^2 [ (p.Eloc1) e_1 + (p.Eloc2) e_2]
+% and use the OT to get Cext
+% Cext = k^2 sum{Im([ (p.Eloc1) (e_1.Einc*) + (p.Eloc2) (e_2.Einc*)])}
+
+% work one angle (column) at a time
+for (ii=1:Na)
+    tmp_P = reshape(P(:,ii), 3, Nr);
+    tmp_El = reshape(Eloc1(:,ii), 3, Nr);
+    tmp_Ei = reshape(Einc1(:,ii), 3, Nr);
+    EE1 = sum(tmp_El .* conj(tmp_Ei));
+    EP1 = sum(tmp_El .* tmp_P);
+    tmp_El = reshape(Eloc2(:,ii), 3, Nr);
+    tmp_Ei = reshape(Einc2(:,ii), 3, Nr);
+    EE2 = sum(tmp_El .* conj(tmp_Ei));    
+    
+    sum
+S = kn^2 * sum(EP1.*EE1 + EP2.*EE2];
+
+end
+
+
+Cext = ...;
+
+end
+
+
+
